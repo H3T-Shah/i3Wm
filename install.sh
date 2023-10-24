@@ -18,6 +18,8 @@ builddir=$(pwd)
 # Installing Essential Programs 
 nala install make git kitty rofi picom thunar nitrogen lxpolkit x11-xserver-utils unzip wget pulseaudio pavucontrol -y
 
+# other needed program
+nala install neofetch htop lxapperance -y
 
 # Installing dependencies for DWM
 nala install build-essential libx11-dev libxft-dev libxinerama-dev libfreetype6-dev libfontconfig1-dev
@@ -26,11 +28,22 @@ nala install build-essential libx11-dev libxft-dev libxinerama-dev libfreetype6-
 git clone https://git.suckless.org/dwm
 git clone https://git.suckless.org/dmenu
 
+rm dwm/config.h
+cp dotfiles/config.h dwm/
+
 # Building both of them
 cd dwm
 make clean install
-cd ..
+cd $builddir
 cd dmenu 
 make clean install
-cd ..
+cd $builddir
 
+cp dotfiles/DWM.desktop /usr/local/bin/dwm
+
+# Install Nordzy cursor
+git clone https://github.com/alvatip/Nordzy-cursors
+cd Nordzy-cursors
+./install.sh
+cd $builddir
+rm -rf Nordzy-cursors
