@@ -6,44 +6,26 @@ if [[ $EUID -ne 0 ]]; then
   exit 1
 fi
 
-apt update
-apt upgrade -y
-apt install nala -y
+sudo nala install libxcb1-dev libxcb-keysyms1-dev libpango1.0-dev libxcb-util0-dev libxcb-icccm4-dev libyajl-dev libstartup-notification0-dev libxcb-randr0-dev libev-dev libxcb-cursor-dev libxcb-xinerama0-dev libxcb-xkb-dev libxkbcommon-dev libxkbcommon-x11-dev autoconf xutils-dev libtool automake
 
-nala fetch
 
-username=$(id -u -n 1000)
-builddir=$(pwd)
+mkdir tmp
+cd tmp
+git clone https://github.com/Airblader/xcb-util-xrm
+cd xcb-util-xrm
+git submodule update --init
+./autogen.sh --prefix=/usr
+make
+sudo make install
 
-# Installing Essential Programs 
-nala install make git kitty rofi picom thunar nitrogen lxpolkit x11-xserver-utils unzip wget pulseaudio pavucontrol -y
-
-# other needed program
-nala install neofetch htop lxapperance -y
-
-# Installing dependencies for DWM
-nala install build-essential libx11-dev libxft-dev libxinerama-dev libfreetype6-dev libfontconfig1-dev
-
-# Cloning DWM and DMENU
-git clone https://git.suckless.org/dwm
-git clone https://git.suckless.org/dmenu
-
-rm dwm/config.h
-cp dotfiles/config.h dwm/
-
-# Building both of them
-cd dwm
-make clean install
-cd $builddir
-cd dmenu 
-make clean install
-cd $builddir
-
-cp dotfiles/DWM.desktop /usr/local/bin/dwm
-
-# Install Nordzy cursor
-git clone https://github.com/alvatip/Nordzy-cursors
-cd Nordzy-cursors
-./install.sh
-cd $builddir
-rm -rf Nordzy-cursors
+cd ..
+git clone https://www.github.com/Airblader/i3 i3-gaps
+cd i3-gaps
+git checkout gaps && git pull
+autoreconf --force --install
+rm -rf build
+mkdir build
+cd build
+../configure --prefix=/usr --sysconfdir=/etc --disable-sanitizers
+make
+sudo make install
